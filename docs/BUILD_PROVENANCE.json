@@ -1,0 +1,9 @@
+{
+  "version": "0.1.0",
+  "source_archive": "ColiBacFinder_source_20261021_133957.tar.gz",
+  "source_archive_sha256": "7cc64fd2722ab7377abf64aa58128dc343762d4b2bb1e2f67269539982720eeb",
+  "database": "bacteriocin_unified_v0.1_20261020_194442_905507",
+  "database_files_modified": false,
+  "source_scripts": "Refactored from supplied scripts; not executing hardcoded legacy paths",
+  "biological_accuracy": "not_independently_evaluated"
+}

@@ -1,0 +1,8 @@
+name: colibacfinder
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.11
+  - blast=2.16.0
+  - pip

@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "colibacfinder"
+version = "0.1.0"
+description = "Reference-based screening and context analysis of E. coli bacteriocin-associated loci"
+requires-python = ">=3.9"
+readme = "README.md"
+dependencies = []
+
+[project.scripts]
+colibacfinder = "colibacfinder.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["colibacfinder*"]
+
+[tool.setuptools.package-data]
+colibacfinder = ["data/**/*"]

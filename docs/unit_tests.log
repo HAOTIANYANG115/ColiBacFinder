@@ -1,0 +1,30 @@
+test_auxiliary_not_primary (test_rules.Tests.test_auxiliary_not_primary) ... ok
+test_bad_rules (test_rules.Tests.test_bad_rules) ... ok
+test_blast_id_mapping (test_rules.Tests.test_blast_id_mapping) ... ok
+test_checksum_failure (test_rules.Tests.test_checksum_failure) ... ok
+test_circular_extraction_one_revolution (test_rules.Tests.test_circular_extraction_one_revolution) ... ok
+test_circular_pair (test_rules.Tests.test_circular_pair) ... ok
+test_complete_V_model (test_rules.Tests.test_complete_V_model) ... ok
+test_database_counts (test_rules.Tests.test_database_counts) ... ok
+test_different_frames_not_merge (test_rules.Tests.test_different_frames_not_merge) ... ok
+test_distinct_copies_remain_separate (test_rules.Tests.test_distinct_copies_remain_separate) ... ok
+test_duplicate_sample_names (test_rules.Tests.test_duplicate_sample_names) ... ok
+test_fasta_gzip (test_rules.Tests.test_fasta_gzip) ... ok
+test_fixed_anchor_not_chain (test_rules.Tests.test_fixed_anchor_not_chain) ... ok
+test_fragment_not_complete_system (test_rules.Tests.test_fragment_not_complete_system) ... ok
+test_immunity_only_not_system (test_rules.Tests.test_immunity_only_not_system) ... ok
+test_invalid_fasta (test_rules.Tests.test_invalid_fasta) ... ok
+test_microcin_overlap_retained (test_rules.Tests.test_microcin_overlap_retained) ... ok
+test_model_labels_all_exist (test_rules.Tests.test_model_labels_all_exist) ... ok
+test_nearby_weak_cannot_hide_nearby_near (test_rules.Tests.test_nearby_weak_cannot_hide_nearby_near) ... ok
+test_one_locus_cannot_supply_two_components (test_rules.Tests.test_one_locus_cannot_supply_two_components) ... ok
+test_other_contig_component_not_near (test_rules.Tests.test_other_contig_component_not_near) ... ok
+test_shared_reference_count (test_rules.Tests.test_shared_reference_count) ... ok
+test_threshold_boundaries (test_rules.Tests.test_threshold_boundaries) ... ok
+test_two_candidates_one_locus (test_rules.Tests.test_two_candidates_one_locus) ... ok
+test_weak_exporter_not_complete (test_rules.Tests.test_weak_exporter_not_complete) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 0.067s
+
+OK

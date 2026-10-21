@@ -1,0 +1,4 @@
+cds_id	protein_sequence_id	protein_accession	source_accession	location_biopython_0based	tier
+X63621.1_CDS0001	COLP_5f03408fd998c1eaa990ebc70cf028537e595899f013bb32b82a50688816dd8c	CAA45167.1	X63621.1	[<0:534](+)	fragment
+X63621.1_CDS0002	COLP_f1048a8a98e8f5fb73c3075ffea88292916a5fcda14ce7726844edeaf5f94045	CAA45168.1	X63621.1	[543:801](+)	candidate
+X63621.1_CDS0003	COLP_d80a311d61f55b0643d7aa65e151b17b2811fdef770f37c0226817f00be466bc	CAA45169.1	X63621.1	[884:1028](+)	auxiliary
