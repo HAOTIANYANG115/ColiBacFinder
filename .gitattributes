@@ -1,0 +1,2 @@
+# Frozen database checksums require byte-identical files.
+colibacfinder/data/** -text
