@@ -18,6 +18,8 @@ def arguments():
     p = argparse.ArgumentParser(prog='colibacfinder', description='Reference-based bacteriocin candidate screening; predictions are not activity tests.')
     p.add_argument('--version', action='version', version=__version__)
     sub = p.add_subparsers(dest='command',required=True)
+    brief = sub.add_parser('summarize', help='Create simple TSV and HTML from an existing run; no BLAST rerun')
+    brief.add_argument('--run', type=Path, required=True)
     check = sub.add_parser('db-check',help='Verify bundled or external reference database')
     check.add_argument('--db',type=Path)
     for cmd in ['run','report']:
@@ -258,6 +260,11 @@ def main(argv=None):
     p = arguments()
     args = p.parse_args(argv)
     try:
+        if args.command=='summarize':
+            from .simple_report import render
+            render(args.run)
+            print(f'Simple reports: {args.run}/00_results_summary.tsv and 00_results_report.html')
+            return 0
         if args.command=='db-check':
             print(json.dumps(Database(args.db).info(),ensure_ascii=False,indent=2))
             return 0

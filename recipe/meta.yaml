@@ -1,0 +1,33 @@
+package:
+  name: colibacfinder
+  version: "0.1.1"
+source:
+  path: ..
+build:
+  number: 0
+  noarch: python
+  script: "{{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv"
+  entry_points:
+    - colibacfinder = colibacfinder.cli:main
+requirements:
+  host:
+    - python >=3.9
+    - pip
+    - setuptools >=61
+    - wheel
+  run:
+    - python >=3.9
+    - blast >=2.16,<3
+test:
+  imports:
+    - colibacfinder
+  commands:
+    - colibacfinder --version
+    - colibacfinder run -h
+    - colibacfinder summarize -h
+    - colibacfinder db-check
+    - makeblastdb -version
+    - tblastn -version
+about:
+  home: https://github.com/HAOTIANYANG115/ColiBacFinder
+  summary: Reference-based bacteriocin candidate screening with genetic context

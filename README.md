@@ -1,4 +1,24 @@
-# ColiBacFinder 0.1.0
+## 0.1.1 更新：先看简报
+
+运行结束后先打开 `00_results_report.html`，或用 Excel 导入 `00_results_summary.tsv`。
+简报逐样本区分近参考本体/前体、免疫候选、弱片段及未检出。组分齐全不代表杀菌活性已经验证。
+原始 01–08 技术表全部保留。
+
+已有 0.1.0 结果无需重跑：
+
+```bash
+colibacfinder summarize --run /path/to/existing_run
+```
+
+此命令读取原表，只更新两个 `00_` 简报文件。简报使用原运行阈值。
+
+Conda 配方和完整发布步骤见 [docs/CONDA_RELEASE.md](docs/CONDA_RELEASE.md)。
+**目前尚未发布到 Conda 渠道，请勿把渠道安装示例当作已可用命令。**
+
+安装包验证：`bash scripts/check_package.sh`。
+版本变化见 [CHANGELOG.md](CHANGELOG.md)。
+
+# ColiBacFinder 0.1.1
 
 大肠杆菌细菌素相关基因组候选区域筛查工具，研究原型版。
 

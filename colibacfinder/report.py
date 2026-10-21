@@ -126,3 +126,6 @@ def aggregate(out, summaries, results):
     write_json(out/'system_models.json', MODELS)
     write_json(out/'run_status.json',dict(status='COMPLETE' if n==len(summaries) else 'COMPLETED_WITH_FAILURES',
         samples=len(summaries),completed=n,failed=len(summaries)-n))
+
+    from .simple_report import render
+    render(out)

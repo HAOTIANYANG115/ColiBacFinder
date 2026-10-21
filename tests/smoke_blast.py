@@ -31,6 +31,11 @@ with tempfile.TemporaryDirectory(prefix='cbf_smoke_') as tmp:
     out = root/'run'
     run('run','-i',inputs,'-o',out,'-t','2',expected=1)
     rows = {r['sample']:r for r in read_tsv(out/'01_sample_summary.tsv')}
+    brief = {r['sample']:r for r in read_tsv(out/'00_results_summary.tsv')}
+    assert brief['invalid']['result']=='分析失败，不能判定'
+    assert brief['V_construct']['main_candidates']=='Microcin_V'
+    assert (out/'00_results_report.html').is_file()
+    run('summarize','--run',out)
     assert rows['invalid']['status']=='FAILED'
     assert rows['negative']['near_core_loci']=='0'
     assert int(rows['V_construct']['near_core_loci'])>=1

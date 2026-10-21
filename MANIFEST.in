@@ -1,0 +1,5 @@
+recursive-include colibacfinder/data *
+include .gitattributes
+recursive-include recipe *
+recursive-include scripts *.sh *.py
+recursive-include tests *.py
