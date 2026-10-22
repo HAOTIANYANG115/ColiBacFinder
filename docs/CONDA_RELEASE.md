@@ -2,13 +2,13 @@
 
 ## Published version
 
-Version **0.1.1** is available at https://anaconda.org/tiantianyangyang/colibacfinder.
-It was installed and exercised in a fresh Linux x86_64 environment. The source tree now prepares **0.1.2** with English reports; that package has not yet been published. This is a personal channel, not a Bioconda release.
+Version **0.1.2** is available at https://anaconda.org/tiantianyangyang/colibacfinder.
+Fresh installation, database integrity and English report regeneration were verified on Linux x86_64. This is a personal channel, not a Bioconda release.
 
 ```bash
 conda create -n colibacfinder --override-channels \
   -c conda-forge -c bioconda -c tiantianyangyang \
-  colibacfinder=0.1.1 -y
+  colibacfinder=0.1.2 -y
 conda activate colibacfinder
 colibacfinder --version
 colibacfinder db-check
@@ -17,7 +17,7 @@ colibacfinder run -i genomes/ -o new_results -t 8
 
 Python >=3.9 and BLAST >=2.16,<3 are runtime dependencies. Users do not need Prokka, ABRicate, Biopython or the build tools. The Python package is noarch, but supported execution depends on BLAST availability; Linux x86_64 is the tested platform.
 
-## Build the next package (maintainers, Linux)
+## Build a package (maintainers, Linux)
 
 ```bash
 conda create -n cbf-build --override-channels -c conda-forge \
@@ -28,7 +28,16 @@ bash scripts/check_package.sh
 bash scripts/build_conda.sh
 ```
 
-The scripts do not upload automatically. Conda tests CLI entry points, database integrity and BLAST dependencies in its package test environment. Artifacts are written to `conda-dist/noarch/`. Use the actual generated filename; the next expected version is 0.1.2. Stop if tests fail.
+The scripts do not upload automatically. Conda tests CLI entry points, database integrity and BLAST dependencies in its package test environment. Artifacts are written to `conda-dist/noarch/`. Use the actual generated filename; the current version is 0.1.2; future releases require synchronized version updates. Stop if tests fail.
+
+If the system `/tmp` is read-only, select a writable directory before building:
+
+```bash
+mkdir -p "$HOME/.cache/colibacfinder/tmp"
+export TMPDIR="$HOME/.cache/colibacfinder/tmp"
+export TMP="$TMPDIR"
+export TEMP="$TMPDIR"
+```
 
 Never regenerate a checksum manifest merely to hide a packaging mismatch. The frozen reference files must preserve their original bytes; `.gitattributes` disables text conversion for the database directory.
 
@@ -49,7 +58,7 @@ The upload script tests the artifact first and does not force replacement of an 
 
 ## Verify the published artifact
 
-After a successful 0.1.2 upload, install from the channel in a new environment:
+To reproduce the installation check, install from the channel in a new environment:
 
 ```bash
 conda create -n cbf-release-test-012 --override-channels \

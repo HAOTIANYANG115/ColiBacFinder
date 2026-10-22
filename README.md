@@ -12,20 +12,20 @@ ColiBacFinder searches nucleotide FASTA assemblies with a frozen protein referen
 
 ## Install with Conda
 
-The published package **0.1.1** is available from the project's [Anaconda.org channel](https://anaconda.org/tiantianyangyang/colibacfinder):
+The published package **0.1.2** is available from the project's [Anaconda.org channel](https://anaconda.org/tiantianyangyang/colibacfinder):
 
 ```bash
 conda create -n colibacfinder --override-channels \
   -c conda-forge -c bioconda -c tiantianyangyang \
-  colibacfinder=0.1.1 -y
+  colibacfinder=0.1.2 -y
 conda activate colibacfinder
 colibacfinder --version
 colibacfinder db-check
 ```
 
-Expect `0.1.1` and `"checksum_status": "PASS"`. Installation, database verification and a real-sample run have been confirmed on Linux x86_64. The package is distributed through a personal channel; it is not a Bioconda release.
+Expect `0.1.2` and `"checksum_status": "PASS"`. Fresh-environment installation, database verification and English report regeneration have been confirmed for 0.1.2 on Linux x86_64. A real-sample search was previously confirmed with 0.1.1. The package is distributed through a personal channel; it is not a Bioconda release.
 
-**Version status:** this source tree prepares **0.1.2**, with English summary reports and expanded CLI help. The published Conda **0.1.1** package still contains Chinese summary text. Version 0.1.2 has not yet been uploaded to the Conda channel. See [CHANGELOG.md](CHANGELOG.md).
+**Version status:** 0.1.2 is available through Conda with English summary reports and expanded CLI help. Existing 0.1.1 installations require an upgrade to receive these changes. See [CHANGELOG.md](CHANGELOG.md).
 
 ### Dependencies and platforms
 
@@ -36,9 +36,9 @@ Expect `0.1.1` and `"checksum_status": "PASS"`. Installation, database verificat
 
 Linux x86_64 is the tested platform. The Python package is `noarch`, but execution still requires compatible BLAST binaries. Native Windows and macOS operation have not been validated; Windows users can use a Linux environment such as WSL2, subject to local validation.
 
-### Install the English source version
+### Install from source
 
-To use the English reports before the next Conda package is published:
+For development or source-based installation:
 
 ```bash
 git clone https://github.com/HAOTIANYANG115/ColiBacFinder.git
@@ -154,7 +154,7 @@ Circular declarations enable origin-aware neighborhood distances and extraction.
 
 ## Regenerate reports
 
-Generate the English summary from an existing unified-version run after installing source version 0.1.2:
+Generate the English summary from an existing unified-version run after installing version 0.1.2:
 
 ```bash
 colibacfinder summarize --run results_batch
@@ -183,7 +183,7 @@ Accessions and evidence links are available in `reference_snapshot/metadata/refe
 
 ## Validation and limitations
 
-The published 0.1.1 package passed fresh-environment installation, database verification and a real plasmid run reported by the maintainer. This checks deployment and reproduces a prior candidate call; it is not independent accuracy validation. See [docs/VALIDATION.md](docs/VALIDATION.md) for software checks and remaining evaluation needs.
+The published 0.1.1 package passed fresh-environment installation, database verification and a real plasmid run reported by the maintainer. The published 0.1.2 package subsequently passed fresh-environment installation, checksum verification and English summary regeneration from that retained run. No new BLAST search was performed in this 0.1.2 check. These are deployment and reporting checks, not independent accuracy validation. See [docs/VALIDATION.md](docs/VALIDATION.md) for software checks and remaining evaluation needs.
 
 The software does not identify species, determine plasmid versus chromosome location, verify intact ORFs, establish expression/activity or guarantee exact subtype calls. Fragmented assemblies, short peptides, divergent sequences and reference gaps can cause missed or ambiguous hits. The search is protein-to-translated-DNA; there is no separate nucleotide BLAST detection path.
 

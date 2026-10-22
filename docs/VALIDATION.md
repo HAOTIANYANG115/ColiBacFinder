@@ -41,4 +41,10 @@ The published artifact is `colibacfinder-0.1.1-py_0.conda` in the `tiantianyangy
 
 ## English source update 0.1.2
 
-All 31 unit tests passed, including the 29 existing tests and new checks for formatted CLI help and English HTML with escaped sample names. Database content, thresholds, table field names and system rules are unchanged. HTML and summary TSV presentation text now use English; the HTML language is `en`. CLI help describes parameters and displays defaults. The next Conda artifact must be built and tested before publication; 0.1.1 installations do not acquire these changes automatically.
+All 31 unit tests passed, including the 29 existing tests and new checks for formatted CLI help and English HTML with escaped sample names. Database content, thresholds, table field names and system rules are unchanged. HTML and summary TSV presentation text now use English; the HTML language is `en`. CLI help describes parameters and displays defaults. The 0.1.2 Conda artifact was subsequently built and tested successfully; 0.1.1 installations do not acquire these changes automatically.
+
+## Published Conda 0.1.2: maintainer-reported check, 2026-10-22
+
+Terminal output confirmed a successful Conda build and package tests, followed by installation in a fresh `cbf-release-test-012` Linux environment (Python 3.15). The CLI reported 0.1.2 and database checksum PASS, with 84 proteins and 92 annotation links. The manifest and protein FASTA fingerprints were unchanged.
+
+Running `summarize` on the retained 0.1.1 `pe23830-PAI` run generated English reports. The summary retained `Colicin_M`, 2/2 bacteriocin/immunity component support and one weak/partial locus. This verifies installed report generation and preservation of the earlier classifications; it is not a new 0.1.2 BLAST run or independent biological validation.
