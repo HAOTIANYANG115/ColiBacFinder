@@ -1,4 +1,4 @@
-# Validation record — 2026-10-21
+# Validation record
 
 ## Completed
 
@@ -12,7 +12,7 @@ These tests establish exercised software behavior only. Reference-derived constr
 ## Not completed
 
 - Independent biological truth-set evaluation, threshold calibration or taxon-wide specificity assessment.
-- Re-running the user's 524, 96, 11 or APEC genome cohorts with this release; the supplied source archive contains scripts/database, not those genomic inputs.
+- Independent cohort-wide reassessment of the 524, 96, 11 and APEC datasets. Earlier exploratory runs and maintainer-reported checks do not constitute a held-out benchmark.
 - Performance/runtime benchmarks on hundreds of complete genomes.
 - Experimental activity confirmation, intact ORF assessment, cross-origin HSP joining, or exact colicin subtype disambiguation.
 
@@ -32,3 +32,13 @@ PYTHONPATH=. python tests/smoke_blast.py
 ```
 
 The integration test creates and removes its own temporary directory only; it does not modify user genomes.
+
+## Published Conda 0.1.1: maintainer-reported check, 2026-10-22
+
+The maintainer supplied terminal output showing installation in a fresh `cbf-release-test` Linux environment, version 0.1.1, a working CLI, and database checksum PASS (84 proteins; 92 annotation links). The installed package used Python 3.15. A real-input run on `pe23830-PAI.fa` completed with one near-reference core locus, `Colicin_M`, bacteriocin/immunity support of 2/2 and one weak/partial locus. This reproduced the earlier candidate interpretation. The raw genomic input was not independently inspected during this documentation update.
+
+The published artifact is `colibacfinder-0.1.1-py_0.conda` in the `tiantianyangyang` Anaconda.org channel. These observations support installation and execution reproducibility, not biological accuracy or activity.
+
+## English source update 0.1.2
+
+All 31 unit tests passed, including the 29 existing tests and new checks for formatted CLI help and English HTML with escaped sample names. Database content, thresholds, table field names and system rules are unchanged. HTML and summary TSV presentation text now use English; the HTML language is `en`. CLI help describes parameters and displays defaults. The next Conda artifact must be built and tested before publication; 0.1.1 installations do not acquire these changes automatically.

@@ -1,120 +1,205 @@
-## 0.1.1 更新：先看简报
+# ColiBacFinder
 
-运行结束后先打开 `00_results_report.html`，或用 Excel 导入 `00_results_summary.tsv`。
-简报逐样本区分近参考本体/前体、免疫候选、弱片段及未检出。组分齐全不代表杀菌活性已经验证。
-原始 01–08 技术表全部保留。
+**Reference-based screening of colicin- and microcin-associated loci in bacterial genome assemblies.**
 
-已有 0.1.0 结果无需重跑：
+ColiBacFinder searches nucleotide FASTA assemblies with a frozen protein reference database using TBLASTN. It reports bacteriocin/precursor candidates, immunity candidates, component support and genomic neighborhoods, while retaining alternative matches and unresolved types.
+
+**Input:** one genome or plasmid assembly, or a directory of assemblies.
+
+**Start with:** `00_results_report.html` for a readable report and `00_results_summary.tsv` for a spreadsheet-ready summary.
+
+**Interpretation:** sequence-based candidates, not experimentally confirmed bacteriocin production or activity.
+
+## Install with Conda
+
+The published package **0.1.1** is available from the project's [Anaconda.org channel](https://anaconda.org/tiantianyangyang/colibacfinder):
 
 ```bash
-colibacfinder summarize --run /path/to/existing_run
+conda create -n colibacfinder --override-channels \
+  -c conda-forge -c bioconda -c tiantianyangyang \
+  colibacfinder=0.1.1 -y
+conda activate colibacfinder
+colibacfinder --version
+colibacfinder db-check
 ```
 
-此命令读取原表，只更新两个 `00_` 简报文件。简报使用原运行阈值。
+Expect `0.1.1` and `"checksum_status": "PASS"`. Installation, database verification and a real-sample run have been confirmed on Linux x86_64. The package is distributed through a personal channel; it is not a Bioconda release.
 
-Conda 配方和完整发布步骤见 [docs/CONDA_RELEASE.md](docs/CONDA_RELEASE.md)。
-**目前尚未发布到 Conda 渠道，请勿把渠道安装示例当作已可用命令。**
+**Version status:** this source tree prepares **0.1.2**, with English summary reports and expanded CLI help. The published Conda **0.1.1** package still contains Chinese summary text. Version 0.1.2 has not yet been uploaded to the Conda channel. See [CHANGELOG.md](CHANGELOG.md).
 
-安装包验证：`bash scripts/check_package.sh`。
-版本变化见 [CHANGELOG.md](CHANGELOG.md)。
+### Dependencies and platforms
 
-# ColiBacFinder 0.1.1
+- Python >=3.9.
+- NCBI BLAST+ >=2.16,<3 (`makeblastdb` and `tblastn` on `PATH`). Conda resolves these dependencies automatically.
+- The frozen reference database is bundled; no separate reference download is required.
+- No Prokka, ABRicate, Biopython, FAA or GFF input is required.
 
-大肠杆菌细菌素相关基因组候选区域筛查工具，研究原型版。
+Linux x86_64 is the tested platform. The Python package is `noarch`, but execution still requires compatible BLAST binaries. Native Windows and macOS operation have not been validated; Windows users can use a Linux environment such as WSL2, subject to local validation.
 
-输入一个核酸 FASTA 文件或一个目录，无需先提供 FAA/GFF。使用固定参考蛋白对核酸序列进行 TBLASTN 搜索，自动生成样本总表、候选位置、备选命中、系统组分和邻域序列。只读取输入目录第一层 `.fa/.fna/.fasta`（支持 `.gz`），忽略其他文件。
+### Install the English source version
 
-**结果是序列与邻域证据，不是细菌素活性鉴定。** “near_reference”不是经过独立数据校准的阳性标准；免疫单独命中、共享转运蛋白、部分结构域命中不能当作完整细菌素系统。标签数量不是独立基因数量。
-
-## 安装
-
-当前可通过 Conda 安装依赖，再从源码安装 ColiBacFinder；尚未发布独立 Conda 软件包。
+To use the English reports before the next Conda package is published:
 
 ```bash
 git clone https://github.com/HAOTIANYANG115/ColiBacFinder.git
 cd ColiBacFinder
 conda env create -f environment.yml
 conda activate colibacfinder
-python -m pip install .
+python -m pip install --no-deps .
 colibacfinder --version
 colibacfinder db-check
+```
+
+Record the commit with `git rev-parse HEAD` for reproducibility. GitHub access is required if the repository is private.
+
+## Quick start
+
+One assembly:
+
+```bash
+colibacfinder run -i genome.fasta -o results_sample -t 8
+```
+
+A directory of assemblies (one file per sample):
+
+```bash
+colibacfinder run -i genomes/ -o results_batch -t 8
+```
+
+The input must contain **nucleotide sequences**, not protein FASTA. Files ending in `.fa`, `.fna` or `.fasta`, optionally `.gz`, are read from the top level of the directory. Other files and subdirectories are ignored. Contigs in one file belong to one sample; do not combine different isolates into a single FASTA.
+
+The output directory must not already exist. Samples are processed sequentially; `-t` controls threads per sample. Inputs are not modified. Interrupted runs are not resumed automatically; use a new output directory for a rerun.
+
+```bash
 colibacfinder -h
 colibacfinder run -h
 ```
 
-私有仓库需要已获授权的 GitHub 账号才能克隆。
-
-依赖：Python ≥3.9，NCBI BLAST+（`makeblastdb`、`tblastn` 必须在 PATH）。本工具没有第三方 Python 运行依赖。附带冻结数据库，无需预先运行 Prokka、ABRicate 或提供 FAA/GFF。
-
-## 一条命令分析
+For long jobs on Linux:
 
 ```bash
-colibacfinder run -i /path/to/genome_fasta -o /path/to/new_results -t 8
-```
-
-`-i`：核酸 FASTA 文件或目录；`-o`：新结果目录；`-t`：每个样本的线程数。样本按顺序处理。
-
-后台运行：
-
-```bash
-nohup colibacfinder run -i /path/to/genome_fasta -o /path/to/new_results -t 8 > colibacfinder.log 2>&1 &
+nohup colibacfinder run -i genomes/ -o results_batch -t 8 > colibacfinder.log 2>&1 &
 tail -f colibacfinder.log
 ```
 
-输出目录必须不存在，避免覆盖旧结果。退出码：0 全部完成；1 存在失败样本；2 参数/准备错误；130 中断。当前版本不支持断点续跑，重跑请用新目录。不会修改原始输入。
+Exit codes: `0`, all samples completed; `1`, at least one sample failed; `2`, argument or preparation error; `130`, interrupted.
 
-## 主要输出
+## Read the results
 
-| 文件 | 内容 |
+Open **`00_results_report.html`** in a browser, or import **`00_results_summary.tsv`** as a tab-delimited table. Each row represents one sample.
+
+| Summary field | Meaning |
 |---|---|
-| `01_sample_summary.tsv` | 每个样本一行：候选区域数、近参考本体/免疫标签、系统候选、失败信息 |
-| `02_all_HSPs.tsv` | 全部原始搜索命中的分级、坐标、参考登录号、参考等级 |
-| `03_candidate_loci.tsv` | 合并后的候选位置；最佳与次佳参考、得分差、歧义、边界标记 |
-| `04_locus_evidence.tsv` | 各位置所有支持命中，保留备选标签 |
-| `05_proximity_pairs.tsv` | 本体/免疫候选的距离、重叠、方向；仅表示邻近 |
-| `06_system_candidates.tsv` | 按系统列出候选与组分支持状态 |
-| `07_system_components.tsv` | 组分逐条证据；弱命中不能补足近参考组分 |
-| `08_label_frequency.tsv` | 标签频率，以成功样本为分母，类别可重叠 |
-| `samples/S00001/` 等 | 样本原始命中、日志、contig 映射、候选邻域序列及坐标 |
-| `input_manifest.tsv` | 样本名、输入路径/校验和与工作目录对应表 |
-| `parameters.json` | 软件、数据库、搜索工具版本、阈值和来源信息 |
-| `reference_snapshot/` | 本次实际使用的数据库快照，含来源及文献字段 |
+| `run_status` | Whether the analysis completed; failed samples are not negatives |
+| `result` | Near-reference bacteriocin/precursor, immunity only, weak/partial candidates only, or no primary candidate |
+| `main_candidates` | Systems supported by a near-reference bacteriocin or precursor hit; unresolved alternatives are retained |
+| `component_support` | Number of supported components out of those included in the current model |
+| `immunity_candidates` | Near-reference immunity labels, which may include multiple labels for one locus |
+| `weak_or_partial_loci` | Weak/partial system anchor loci; inspect detailed tables for all candidate regions |
+| `notes` | Ambiguity, warnings or errors |
 
-邻域默认两侧各 5 kb；间距默认 10 kb。Microcin V 的前体与免疫命中允许重叠，单独记录重叠长度。候选数量不等于预测完整蛋白数量；`coding_integrity=not_assessed`。
+For example, `Colicin_M: 2/2 [bacteriocin_immunity_only]` means that both modeled components (bacteriocin and immunity) have support. It **does not** establish an intact, expressed or active system. Names separated by `/` are competing types at the same locus, not additional genes. An immunity hit alone does not establish bacteriocin production.
 
-## 固定默认规则
+A negative screening result means **no qualifying candidate in this database at these thresholds**, not proven biological absence.
 
-搜索 E-value ≤1e-3；入筛 E-value ≤1e-5。按优先顺序：
+### Detailed evidence
 
-| 分级 | identity | 参考覆盖 | 最短比对 |
+| Output | Contents |
+|---|---|
+| `01_sample_summary.tsv` | Technical per-sample counts, labels and failures |
+| `02_all_HSPs.tsv` | Retained search hits, classifications, coordinates and reference annotations |
+| `03_candidate_loci.tsv` | Merged candidate loci, best/alternative matches, score differences and edge flags |
+| `04_locus_evidence.tsv` | Individual matches supporting each locus |
+| `05_proximity_pairs.tsv` | Bacteriocin/immunity proximity, overlap and strand; proximity is not functional confirmation |
+| `06_system_candidates.tsv` | System candidates and component-support status |
+| `07_system_components.tsv` | Evidence for individual components |
+| `08_label_frequency.tsv` | Sample-level label frequencies among completed samples; categories can overlap |
+| `samples/S00001/` and subsequent directories | Raw hits, logs, contig ID maps and candidate neighborhood sequences |
+| `input_manifest.tsv` | Sample IDs, input paths, checksums and work directories |
+| `parameters.json`, `system_models.json` | Versions, screening rules and component-model definitions |
+| `reference_snapshot/` | Reference sequences, source accessions and evidence metadata used in the run |
+
+Labels and HSPs are not independent gene counts. Candidate loci are not confirmed full-length proteins; coding integrity is not assessed.
+
+## Screening rules
+
+The search retains hits at E-value <=1e-3. Screening requires E-value <=1e-5 and applies the following classes in order:
+
+| Class | Identity | Reference span | Minimum alignment length |
 |---|---:|---:|---:|
-| near_reference | ≥80% | ≥80% | 不额外限制 |
-| remote | ≥35% | ≥70% | 40 aa |
-| partial | ≥35% | ≥10% | 60 aa |
+| `near_reference` | >=80% | >=80% | No additional minimum |
+| `remote` | >=35% | >=70% | 40 aa |
+| `partial` | >=35% | >=10% | 60 aa |
 
-覆盖为单个 HSP 的参考坐标跨度，不是多 HSP 合并覆盖。当前阈值沿用探索流程，尚未做独立性能校准。不同角色和参考等级始终保留。相同位置存在多个类型标签时保留歧义，不强行选第一条。
+Reference span is the percentage of reference coordinates covered by **one HSP**, not cumulative coverage across HSPs. Thresholds are exploratory and have not been calibrated on an independent biological truth set. A high-scoring shared domain alone does not establish a complete bacteriocin or a precise subtype.
 
-Microcin V、J25、B17 的 `all_model_components_near_reference` 仅代表所有模型组分都有近参考邻域证据，未验证 ORF 完整性、表达或活性。H47/M/I47 及 colicin 模型有不同覆盖范围，详见输出 `system_models.json`。转运/成熟组分单列，不能增加本体数量。
+Useful options:
 
-## 重出报告与独立评估
+| Option | Default | Purpose |
+|---|---:|---|
+| `--identity`, `--coverage` | 80, 80 | Near-reference screening thresholds (%) |
+| `--evalue` | 1e-5 | Screening E-value |
+| `--search-evalue` | 1e-3 | Search E-value |
+| `--remote-identity`, `--remote-coverage` | 35, 70 | Remote-candidate thresholds (%) |
+| `--partial-identity`, `--partial-coverage` | 35, 10 | Partial-candidate thresholds (%) |
+| `--neighbor-bp` | 10000 | Maximum component-to-anchor gap |
+| `--flank-bp` | 5000 | Sequence extracted on each side of a candidate |
+| `--db` | Bundled release | External compatible database directory |
+| `--circular-map` | None | TSV with `sample` and `contig` columns for explicitly closed molecules |
+| `--keep-db` | Off | Retain per-sample BLAST databases |
+
+Overlapping precursor/immunity hits, including those in Microcin V, are retained with explicit overlap lengths. Shared export or maturation proteins do not count as bacteriocin precursors. Model scopes differ among systems; inspect `system_models.json` before interpreting component completeness.
+
+Circular declarations enable origin-aware neighborhood distances and extraction. They do not join TBLASTN HSPs across the origin. Declare circularity only when closure is supported by assembly evidence.
+
+## Regenerate reports
+
+Generate the English summary from an existing unified-version run after installing source version 0.1.2:
 
 ```bash
-colibacfinder report --from-run /path/to/old_run -o /path/to/new_report
-colibacfinder evaluate --run /path/to/run --truth truth.tsv -o /path/to/evaluation
+colibacfinder summarize --run results_batch
 ```
 
-重出报告不重跑 BLAST，核对输入校验和与数据库指纹；修改阈值可用 `--identity`、`--coverage` 等。旧版21号脚本输出可尝试读取，但没有原始输入校验和，报告会标记这一限制。新的规则更明确地处理辅助组分，因此不保证计数与旧脚本完全一致。
+This replaces only the two `00_` reports, preserves the detailed evidence and uses the existing classifications. No BLAST rerun is needed. Version 0.1.1 also supports this command but produces its original summary language.
 
-`truth.tsv` 必须含 `sample,target,truth,evidence` 四列（制表符），truth 为 0/1。支持 `ANY_CORE`、`ANY_NONEXPORT_IMMUNITY`、`system:Microcin_V`、`system:Microcin_J25`、`system:Microcin_B17`。证据需对应同一预测终点；不应把“培养未出现抑菌圈”直接当作“基因不存在”。未知状态不填为阴性。失败/缺失样本自动排除，并保留排除记录。
+To reclassify retained raw hits into a **new** report directory:
 
-独立评估前先冻结数据库和阈值，留出未参与建库与调参的阳性、阴性样本，分层评估本体/免疫/系统，报告 TP/FP/TN/FN、敏感度、特异度和精确率。自匹配与模拟序列只用于程序自检，不能用于报告真实准确率。
+```bash
+colibacfinder report --from-run results_batch -o results_reclassified
+```
 
-## 环状序列
+This checks available input checksums and database fingerprints. Threshold options can be supplied; see `colibacfinder report -h`. Legacy batch-script runs lack some provenance information and are flagged accordingly. Counts need not match those of the earlier exploratory scripts.
 
-仅对已确认闭合序列可提供 `--circular-map circular.tsv`，两列 `sample`、`contig`。它用于跨原点邻域距离与序列提取，不会自动拼接跨原点的 TBLASTN 命中。不能仅根据质粒名称认定闭合。
+## Reference database and reproducibility
 
-## 版本与范围
+Bundled release: `bacteriocin_unified_v0.1_20261020_194442_905507`.
 
-固定库：`bacteriocin_unified_v0.1_20261020_194442_905507`，84 条独立参考蛋白、92 条注释关系。包括已审阅主参考、候选、片段和辅助参考，不能全部称作已验证参考。原始元数据和证据链接原样保留；可在 `reference_snapshot/metadata/reference_links.tsv` 查登录号和证据，在 `source_metadata/` 查详细来源。
+- 84 distinct protein sequences and 92 annotation relationships.
+- Main, candidate, fragment and auxiliary references retain their evidence tiers.
+- 39 distinct source CDS sequences, linked to 36 proteins; protein sequences without CDS links are not reverse-translated.
+- Original reference bytes and SHA256 checksums are preserved across this presentation update.
 
-软件不进行物种鉴定、质粒定位鉴定、ORF 完整性确认、毒素活性判断或精确亚型确认；不包含独立 nucleotide BLAST 路径。碎片化、缺失、短肽统计敏感性和不完整参考覆盖可能造成漏检。科研原型，发布许可及作者信息须由项目所有者在公开发布前确定；未擅自改变原始数据授权。
+Accessions and evidence links are available in `reference_snapshot/metadata/reference_links.tsv`; detailed provenance is in `reference_snapshot/source_metadata/`. Historical source metadata are preserved as supplied, including original-language provenance text. Report the software version, database fingerprint and thresholds in research outputs.
+
+## Validation and limitations
+
+The published 0.1.1 package passed fresh-environment installation, database verification and a real plasmid run reported by the maintainer. This checks deployment and reproduces a prior candidate call; it is not independent accuracy validation. See [docs/VALIDATION.md](docs/VALIDATION.md) for software checks and remaining evaluation needs.
+
+The software does not identify species, determine plasmid versus chromosome location, verify intact ORFs, establish expression/activity or guarantee exact subtype calls. Fragmented assemblies, short peptides, divergent sequences and reference gaps can cause missed or ambiguous hits. The search is protein-to-translated-DNA; there is no separate nucleotide BLAST detection path.
+
+For independent assessment:
+
+```bash
+colibacfinder evaluate --run results_batch --truth truth.tsv -o evaluation
+```
+
+The tab-delimited truth table requires `sample`, `target`, `truth` (0/1) and `evidence`. Supported targets are `ANY_CORE`, `ANY_NONEXPORT_IMMUNITY`, `system:Microcin_V`, `system:Microcin_J25` and `system:Microcin_B17`. Use independent evidence for the same endpoint being evaluated. Do not label unknowns as negative or interpret a negative inhibition assay as proof of gene absence. Failed/missing samples are excluded explicitly. Reference self-matches and synthetic controls are software checks, not estimates of biological sensitivity or specificity.
+
+## Development and support
+
+- [Build and publish a Conda package](docs/CONDA_RELEASE.md)
+- [Validation record](docs/VALIDATION.md)
+- [Version history](CHANGELOG.md)
+- [Report an issue](https://github.com/HAOTIANYANG115/ColiBacFinder/issues): include the software version, database-check output, command and relevant logs; do not include credentials or confidential genomic data.
+
+No software license has yet been specified in this repository. Third-party reference records retain their original terms; package availability alone does not grant redistribution rights. No peer-reviewed software citation is currently specified; identify the repository, version and database release when describing use.

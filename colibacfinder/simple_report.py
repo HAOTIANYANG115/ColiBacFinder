@@ -8,7 +8,7 @@ STRONG = {'all_model_components_near_reference', 'modeled_components_near_refere
           'core_near_reference_components_incomplete_or_ambiguous'}
 FIELDS = ['sample', 'run_status', 'result', 'main_candidates', 'component_support',
           'immunity_candidates', 'weak_or_partial_loci', 'notes']
-LABELS = ['样本', '运行状态', '筛查结论', '主要候选', '配套组分', '免疫候选', '弱或片段位点数', '提示']
+LABELS = ['Sample', 'Run status', 'Screening result', 'Main candidates', 'Component support', 'Immunity candidates', 'Weak or partial loci', 'Notes']
 
 def build_rows(summaries, systems):
     by_sample = defaultdict(list)
@@ -37,25 +37,25 @@ def build_rows(summaries, systems):
                 support.append('{}: {}/{} [{}]'.format(r['system'],
                     r.get('nearby_near_components',0),r.get('modeled_components',0),r.get('model_scope','')))
             if len({r['system'] for r in rr}) > 1:
-                notes.append('同一位点存在多个类型候选，尚未定型')
+                notes.append('Multiple candidate types at the same locus; subtype unresolved')
         complete = s['status'] == 'COMPLETE'
         near_core = int(s.get('near_core_loci') or 0)
         near_immune = int(s.get('near_nonexport_immunity_loci') or 0)
         if not complete:
-            result = '分析失败，不能判定'
+            result = 'Analysis failed; no conclusion'
             names, support = [], []
         elif near_core:
-            result = '检出近参考本体/前体候选'
+            result = 'Near-reference bacteriocin/precursor candidate detected'
             if not names:
                 names = [s.get('near_core_candidate_labels','')]
         elif near_immune:
-            result = '仅检出近参考免疫候选'
+            result = 'Near-reference immunity candidate only'
         elif int(s.get('primary_candidate_loci') or 0):
-            result = '仅弱或片段候选，待复核'
+            result = 'Weak or partial candidates only; review required'
         else:
-            result = '当前阈值下未检出主要候选'
+            result = 'No primary candidate detected at current thresholds'
         if complete and near_core and not groups:
-            notes.append('本体/前体候选未匹配系统模型，请查详细证据')
+            notes.append('Bacteriocin/precursor candidate has no matching system model; inspect detailed evidence')
         rows.append(dict(sample=s['sample'],run_status=s['status'],result=result,
             main_candidates='; '.join(names),component_support='; '.join(support),
             immunity_candidates=s.get('near_immunity_candidate_labels','') if complete else '',
@@ -69,11 +69,11 @@ def render(run_dir):
     write_tsv(run_dir/'00_results_summary.tsv',FIELDS,rows)
     head = ''.join('<th>'+escape(x)+'</th>' for x in LABELS)
     body = ''.join('<tr>'+''.join('<td>'+escape(str(r.get(k,'')))+'</td>' for k in FIELDS)+'</tr>' for r in rows)
-    doc = '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>ColiBacFinder results</title>'
+    doc = '<!doctype html><html lang="en"><meta charset="utf-8"><title>ColiBacFinder results</title>'
     doc += '<style>body{font:15px system-ui;margin:32px;color:#172b3a}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ccd5dc;padding:10px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#edf3f6}tr:nth-child(even){background:#f8fafb}p{max-width:1100px;line-height:1.6}</style>'
-    doc += '<h1>ColiBacFinder 结果总览</h1><p>共 {} 个样本；成功 {} 个。基因组预测不代表已产生细菌素或具有杀菌活性。</p>'.format(len(rows),sum(r['run_status']=='COMPLETE' for r in rows))
-    doc += '<p>主要候选仅列近参考本体/前体支持的系统。斜线分隔表示同一位点的不同候选，不能作为独立基因计数。配套组分分母为当前模型纳入的组分数，不代表所有生物学必需组分；编码完整性尚未验证。免疫候选名称可能来自同一序列的交叉命中。</p>'
-    doc += '<p>未检出仅指当前参考库和阈值；弱或片段命中请查看 03_candidate_loci.tsv、04_locus_evidence.tsv 和 06_system_candidates.tsv。全部技术证据保留在原表中。</p>'
+    doc += '<h1>ColiBacFinder results overview</h1><p>{} samples; {} completed. Genomic predictions do not establish bacteriocin production or antibacterial activity.</p>'.format(len(rows),sum(r['run_status']=='COMPLETE' for r in rows))
+    doc += '<p>Main candidates require near-reference bacteriocin or precursor support. Names separated by a slash are alternatives at one locus, not separate genes. Component support counts refer to the current model, not necessarily all biologically required components. Coding integrity is not assessed. Multiple immunity labels can describe the same locus.</p>'
+    doc += '<p>No detection applies only to the current reference database and thresholds. Review weak or partial hits in 03_candidate_loci.tsv, 04_locus_evidence.tsv and 06_system_candidates.tsv. All detailed evidence is retained.</p>'
     doc += '<table><thead><tr>'+head+'</tr></thead><tbody>'+body+'</tbody></table></html>'
     (run_dir/'00_results_report.html').write_text(doc,encoding='utf-8')
     return rows

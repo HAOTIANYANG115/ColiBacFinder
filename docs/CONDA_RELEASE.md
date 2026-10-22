@@ -1,43 +1,64 @@
-# Conda 构建与发布 0.1.1
+# Conda distribution and release guide
 
-目前仓库提供配方和脚本；不代表已经在 Anaconda.org 或 Bioconda 上架。
-Python >=3.9，BLAST >=2.16,<3；无需 Prokka、ABRicate、Biopython。
-软件为 noarch Python 包，但完整运行还要求目标平台有可用 BLAST 包；优先验证 Linux x86_64。
+## Published version
 
-## 开发者构建（Linux）
+Version **0.1.1** is available at https://anaconda.org/tiantianyangyang/colibacfinder.
+It was installed and exercised in a fresh Linux x86_64 environment. The source tree now prepares **0.1.2** with English reports; that package has not yet been published. This is a personal channel, not a Bioconda release.
 
 ```bash
-conda create -n cbf-build --override-channels -c conda-forge python=3.11 conda-build anaconda-client pip setuptools wheel -y
+conda create -n colibacfinder --override-channels \
+  -c conda-forge -c bioconda -c tiantianyangyang \
+  colibacfinder=0.1.1 -y
+conda activate colibacfinder
+colibacfinder --version
+colibacfinder db-check
+colibacfinder run -i genomes/ -o new_results -t 8
+```
+
+Python >=3.9 and BLAST >=2.16,<3 are runtime dependencies. Users do not need Prokka, ABRicate, Biopython or the build tools. The Python package is noarch, but supported execution depends on BLAST availability; Linux x86_64 is the tested platform.
+
+## Build the next package (maintainers, Linux)
+
+```bash
+conda create -n cbf-build --override-channels -c conda-forge \
+  python=3.11 conda-build anaconda-client=1.14.1 pip setuptools wheel -y
 conda activate cbf-build
 cd /path/to/ColiBacFinder
 bash scripts/check_package.sh
 bash scripts/build_conda.sh
 ```
 
-脚本不自动上传。conda build 会在测试环境验证 CLI、数据库校验和 BLAST 依赖。
-产物在 conda-dist/noarch；若出错，停止发布并保留日志。
+The scripts do not upload automatically. Conda tests CLI entry points, database integrity and BLAST dependencies in its package test environment. Artifacts are written to `conda-dist/noarch/`. Use the actual generated filename; the next expected version is 0.1.2. Stop if tests fail.
 
-## 开发者上传
+Never regenerate a checksum manifest merely to hide a packaging mismatch. The frozen reference files must preserve their original bytes; `.gitattributes` disables text conversion for the database directory.
 
-先自行注册 Anaconda.org 账号；该账号不一定与 GitHub 用户名相同。
-不应把密码或 token 写进代码或发到聊天。
+## Authenticate and upload
+
+For legacy anaconda-client 1.14.1, the following environment variable selects the standalone client when newer CLI plugins are also installed:
 
 ```bash
+export ANACONDA_CLIENT_FORCE_STANDALONE=1
 anaconda login
-bash scripts/publish_conda.sh YOUR_ANACONDA_USERNAME /absolute/path/to/colibacfinder-0.1.1-py_0.conda
+anaconda whoami
+bash scripts/publish_conda.sh tiantianyangyang /absolute/path/to/colibacfinder-0.1.2-py_0.conda
 ```
 
-产物后缀和 build 字符串以实际生成文件为准（可能是 .tar.bz2）。
-上传前确认源码及第三方参考数据的分发许可；本仓库尚未声明开源许可证。
-脚本会重新测试包，上传不使用 --force。只有上传成功并确认渠道可见后才能分发下面的安装命令。
+Use Anaconda.org credentials, not the password of a social-login provider. If token authentication is used, obtain an Anaconda.org token with the necessary repository/API permissions and supply it locally through the client's supported authentication mechanism. Never commit or share passwords or tokens.
 
-## 用户安装（发布完成后）
+The upload script tests the artifact first and does not force replacement of an existing package. Confirm the intended account, package version and distribution permissions before publication. This repository does not yet specify a software license; preserve third-party reference terms.
+
+## Verify the published artifact
+
+After a successful 0.1.2 upload, install from the channel in a new environment:
 
 ```bash
-conda create -n colibacfinder --override-channels -c YOUR_ANACONDA_USERNAME -c conda-forge -c bioconda colibacfinder=0.1.1 -y
-conda activate colibacfinder
+conda create -n cbf-release-test-012 --override-channels \
+  -c conda-forge -c bioconda -c tiantianyangyang \
+  colibacfinder=0.1.2 -y
+conda activate cbf-release-test-012
+colibacfinder --version
 colibacfinder db-check
-colibacfinder run -i genomes -o new_results -t 8
+colibacfinder run -i /path/to/test_genome.fasta -o /path/to/new_test_results -t 8
 ```
 
-这是个人 Conda 渠道发布，不是已被 Bioconda 接收。用户安装无需 pip 或开发构建工具。
+Check the expected version, checksum PASS, successful run status and English summary output. Update the README's published version only after upload and installation verification. A GitHub source update alone does not change an existing Conda package.

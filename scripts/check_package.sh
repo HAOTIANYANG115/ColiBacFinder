@@ -15,5 +15,6 @@ cd "$CHECK"
 unset PYTHONPATH
 "$CHECK/env/bin/colibacfinder" --version
 "$CHECK/env/bin/colibacfinder" db-check
+"$CHECK/env/bin/colibacfinder" run -h
 "$CHECK/env/bin/colibacfinder" summarize -h
 printf 'PASS: isolated wheel installation and original database checksums\n'

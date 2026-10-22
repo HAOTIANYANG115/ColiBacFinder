@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "colibacfinder"
-version = "0.1.1"
+version = "0.1.2"
 description = "Reference-based screening and context analysis of E. coli bacteriocin-associated loci"
 requires-python = ">=3.9"
 readme = "README.md"

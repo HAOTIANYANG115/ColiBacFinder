@@ -1,11 +1,21 @@
-# 0.1.1
+# Changelog
 
-- 自动输出 00_results_summary.tsv 与 00_results_report.html。
-- 新增 summarize --run：从现有统一版本结果生成简报，不重跑 BLAST。
-- 弱或片段候选不进入主要系统候选列；同一 anchor 的竞争类型用斜线显示。
-- 失败样本单独标记，未检出限定于当前库和阈值。
-- 保护数据库原始字节及 SHA256 清单，增加独立 wheel 安装校验脚本。
-- 提供 Conda 配方、构建和显式上传脚本，声明 BLAST 运行依赖。
-- 检测阈值、数据库内容及功能证据等级未改变。
+## 0.1.2 — source update; Conda publication pending
 
-Conda 构建与渠道上传尚需在有 Conda 和发布账号的环境执行。
+- Use English for summary TSV conclusions, HTML reports and interpretation notes.
+- Expand command-line help with input requirements, parameter descriptions and defaults.
+- Replace the README and release guide with English documentation for international researchers.
+- Document the published 0.1.1 Conda channel and its successful Linux installation and real-sample check.
+- Preserve all screening thresholds, detailed table schemas, reference bytes and evidence tiers.
+- Keep 0.1.1 available; the 0.1.2 changes do not update already installed packages automatically.
+
+## 0.1.1 — published to Anaconda.org on 2026-10-22
+
+- Automatically generate `00_results_summary.tsv` and `00_results_report.html`.
+- Add `summarize --run` to generate summaries without rerunning BLAST.
+- Keep weak/partial candidates separate from main candidates and retain competing types at one anchor.
+- Distinguish failed analyses from no-detection results.
+- Preserve original database bytes and checksums; add isolated wheel installation checks.
+- Add a Conda recipe, build/upload scripts and explicit BLAST runtime dependencies.
+- Retain the original screening thresholds and reference evidence tiers.
+- Publish `colibacfinder-0.1.1-py_0.conda` to the `tiantianyangyang` channel.

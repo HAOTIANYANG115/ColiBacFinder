@@ -10,4 +10,4 @@ PACKAGE=$2
 # Authenticate locally with anaconda login; never place tokens in this script.
 conda build --test "$PACKAGE" --override-channels -c conda-forge -c bioconda
 anaconda upload --user "$CHANNEL" "$PACKAGE"
-printf 'After upload, users can run: conda create -n colibacfinder --override-channels -c %s -c conda-forge -c bioconda colibacfinder=0.1.1\n' "$CHANNEL"
+printf 'Package uploaded. Verify its version from a fresh environment using channel: %s\n' "$CHANNEL"

@@ -4,5 +4,5 @@
   "source_root": "/dell-11T/home/tianyang/Colicin",
   "database_release": "bacteriocin_unified_v0.1_20261020_194442_905507",
   "database_path": "/dell-11T/home/tianyang/Colicin/database/bacteriocin_unified_v0.1_20261020_194442_905507",
-  "note": "现有代码与参考库快照，供整合使用；不是已发布软件"
+  "note": "Historical source code and reference snapshot for integration; this archive was not a released software package"
 }
